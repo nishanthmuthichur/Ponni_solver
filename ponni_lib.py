@@ -11,19 +11,19 @@ V_VEL = 1
 
 #************************DATA STRUCTURE DEFINITIONS****************************
 
-class flow_blk:
+class flow_blk_1D:
     
     def __init__(self):
 
         self.U_sol = list()
         self.F_sol = list()
     
-        self.time_idx = 0
-        self.time     = 0
+        self.Iter  = 0
+        self.time  = 0
 
     def __str__(self):
         
-        return f"time_idx = {self.time_idx}"    
+        return f'Iter = {self.Iter}'    
 
 #*************************FUNCTION DEFINITIONS*********************************
 

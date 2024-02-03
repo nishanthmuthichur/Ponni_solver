@@ -5,10 +5,10 @@ import numpy as np
 # This function is used to compute the derivative 'dYdX' of 'Y' using 
 # an explicit 8th order central difference stencil
 
-def comp_CD8_deriv_periodic(Y):
+def comp_CD8_deriv_periodic(U):
 
-    N_pts = len(Y);
-    dYdX = np.zeros(N_pts);    
+    N_pts = len(U);
+    dUdX = np.zeros(N_pts);    
 
     a_m4 = (1/280)
     a_m3 = (-4/105)
@@ -22,17 +22,178 @@ def comp_CD8_deriv_periodic(Y):
 
     for idx in range(0, N_pts):
 
-        dYdX[idx] = a_m4 * Y[idx - 4] + \
-                    a_m3 * Y[idx - 3] + \
-                    a_m2 * Y[idx - 2] + \
-                    a_m1 * Y[idx - 1] + \
-                    a_0  * Y[idx    ] + \
-                    a_p1 * Y[idx + 1] + \
-                    a_p2 * Y[idx + 2] + \
-                    a_p3 * Y[idx + 3] + \
-                    a_p4 * Y[idx + 4]    
+        idx_m4 = idx - 4            
+        idx_m3 = idx - 3
+        idx_m2 = idx - 2
+        idx_m1 = idx - 1
+        idx_0  = idx
+            
+        if (idx <= (N_pts - 5)):
+                
+            idx_p1 = idx + 1
+            idx_p2 = idx + 2
+            idx_p3 = idx + 3
+            idx_p4 = idx + 4                
+                
+        elif (idx == (N_pts - 4)): 
+                
+            idx_p1 = idx + 1
+            idx_p2 = idx + 2
+            idx_p3 = idx + 3
+            idx_p4 = (idx + 4) % N_pts                
+            
+        elif (idx == (N_pts - 3)): 
+                
+            idx_p1 = idx + 1
+            idx_p2 = idx + 2
+            idx_p3 = (idx + 3) % N_pts                            
+            idx_p4 = (idx + 4) % N_pts                            
+            
+        elif (idx == (N_pts - 2)): 
+                
+            idx_p1 = idx + 1
+            idx_p2 = (idx + 2) % N_pts                            
+            idx_p3 = (idx + 3) % N_pts                            
+            idx_p4 = (idx + 4) % N_pts
+            
+        elif (idx == (N_pts - 1)): 
+                
+            idx_p1 = (idx + 1) % N_pts                            
+            idx_p2 = (idx + 2) % N_pts                            
+            idx_p3 = (idx + 3) % N_pts                            
+            idx_p4 = (idx + 4) % N_pts            
+            
+        else: 
+            
+            print(f'Error! All if conditions are exhausted.')
+
+        dUdX[idx] = a_m3 * U[idx_m3] + \
+                    a_m2 * U[idx_m2] + \
+                    a_m1 * U[idx_m1] + \
+                    a_0  * U[idx_0 ] + \
+                    a_p1 * U[idx_p1] + \
+                    a_p2 * U[idx_p2] + \
+                    a_p3 * U[idx_p3]
+
+    return dUdX
+
+# 4th order DRP derivative scheme
+def comp_DRP4_deriv_periodic(Y):
+
+    N_pts = len(Y);
+    dYdX = np.zeros(N_pts);    
+
+    a_m3 = -0.02651995
+    a_m2 =  0.18941314
+    a_m1 = -0.79926643
+    a_0  =  0 
+    a_p1 = -a_m1
+    a_p2 = -a_m2
+    a_p3 = -a_m3
+
+    for idx in range(0, N_pts):
+
+        idx_m3 = idx - 3
+        idx_m2 = idx - 2
+        idx_m1 = idx - 1
+        idx_0  = idx
+            
+        if (idx <= (N_pts - 4)):
+                
+            idx_p1 = idx + 1
+            idx_p2 = idx + 2
+            idx_p3 = idx + 3
+                
+        elif (idx == (N_pts - 3)): 
+                
+            idx_p1 = idx + 1
+            idx_p2 = idx + 2
+            idx_p3 = (idx + 3) % N_pts                
+            
+        elif (idx == (N_pts - 2)): 
+                
+            idx_p1 = idx + 1
+            idx_p2 = (idx + 2) % N_pts                            
+            idx_p3 = (idx + 3) % N_pts                            
+            
+        elif (idx == (N_pts - 1)): 
+                
+            idx_p1 = (idx + 1) % N_pts                            
+            idx_p2 = (idx + 2) % N_pts                            
+            idx_p3 = (idx + 3) % N_pts
+            
+        else: 
+            
+            print(f'Error! All if conditions are exhausted.')
+
+        dYdX[idx] = a_m3 * Y[idx_m3] + \
+                    a_m2 * Y[idx_m2] + \
+                    a_m1 * Y[idx_m1] + \
+                    a_0  * Y[idx_0 ] + \
+                    a_p1 * Y[idx_p1] + \
+                    a_p2 * Y[idx_p2] + \
+                    a_p3 * Y[idx_p3] 
 
     return dYdX
+
+# 4th order DRP derivative scheme
+def comp_DRP4_fil_periodic(U):
+
+    N_pts = len(U);
+    fil_U = np.zeros(N_pts) 
+
+    d_m3 = -0.01712408960
+    d_m2 =  0.08910250435 
+    d_m1 = -0.2328759104
+    d_0  =  0.3217949913
+    d_p1 = d_m1
+    d_p2 = d_m2
+    d_p3 = d_m3
+
+    for idx in range(0, N_pts):
+
+        idx_m3 = idx - 3
+        idx_m2 = idx - 2
+        idx_m1 = idx - 1
+        idx_0  = idx
+            
+        if (idx <= (N_pts - 4)):
+                
+            idx_p1 = idx + 1
+            idx_p2 = idx + 2
+            idx_p3 = idx + 3
+                
+        elif (idx == (N_pts - 3)): 
+                
+            idx_p1 = idx + 1
+            idx_p2 = idx + 2
+            idx_p3 = (idx + 3) % N_pts                
+            
+        elif (idx == (N_pts - 2)): 
+                
+            idx_p1 = idx + 1
+            idx_p2 = (idx + 2) % N_pts                            
+            idx_p3 = (idx + 3) % N_pts                            
+            
+        elif (idx == (N_pts - 1)): 
+                
+            idx_p1 = (idx + 1) % N_pts                            
+            idx_p2 = (idx + 2) % N_pts                            
+            idx_p3 = (idx + 3) % N_pts
+            
+        else: 
+            
+            print(f'Error! All if conditions are exhausted.')
+
+        fil_U[idx] = d_m3 * U[idx_m3] + \
+                     d_m2 * U[idx_m2] + \
+                     d_m1 * U[idx_m1] + \
+                     d_0  * U[idx_0 ] + \
+                     d_p1 * U[idx_p1] + \
+                     d_p2 * U[idx_p2] + \
+                     d_p3 * U[idx_p3] 
+
+    return fil_U
 
 def comp_CD8_deriv(Y):
 
@@ -250,81 +411,57 @@ def comp_CD10_filter(U):
 
 
 
-def comp_RK4_time_step(compute_fluxes, Flow_vec_0, \
-                                           dx, dy, \
-                                          delta_t):
+def comp_RK4_time_step(comp_fluxes, deriv_sten, flow_0, delta_t):
 
-    Flow_vec_up = Flow_vec_0    
+    flow_up = flow_0    
     
     #S1
-    Flow_vec_1 = Flow_vec_0     
+    flow_1 = flow_0     
     #K1
-    Flow_vec_1 = compute_fluxes(dx, dy, \
-                            Flow_vec_1)
+    flow_1 = comp_fluxes(flow_1, deriv_sten)
     #RK_stage_1    
-    Flow_vec_up.U_sol = list( map( add, \
-                                   Flow_vec_up.U_sol, \
-                                   [var_idx * (delta_t / 6) for var_idx in Flow_vec_1.F_sol]   ) )    
-    #Flow_vec_up.U_sol = list( map( add, Flow_vec_up.U_sol, ((delta_t / 6) * Flow_vec_1.F_sol) ) )
-    #Flow_vec_up.U_sol = Flow_vec_up.U_sol + delta_t * (Flow_vec_1.F_sol/6)        
-
+    flow_up.U_sol = list( map( add, \
+                               flow_up.U_sol, \
+                               [var_idx * (delta_t / 6) for var_idx in flow_1.F_sol]   ) )    
         
     #S2    
-    Flow_vec_1.U_sol = list( map(add, Flow_vec_0.U_sol, [var_idx * (delta_t * 0.5) for var_idx in Flow_vec_1.F_sol] ) )
-    #Flow_vec_1.U_sol = Flow_vec_0.U_sol + ((delta_t * 0.5) * Flow_vec_1.F_sol)
+    flow_1.U_sol = list( map(add, flow_0.U_sol, [var_idx * (delta_t * 0.5) for var_idx in flow_1.F_sol] ) )
     #K2
-    Flow_vec_1 = compute_fluxes(dx, dy, \
-                            Flow_vec_1)    
+    flow_1 = comp_fluxes(flow_1, deriv_sten)    
     #RK_stage_2    
-    Flow_vec_up.U_sol = list( map( add, \
-                                   Flow_vec_up.U_sol, \
-                                   [var_idx * (delta_t / 3) for var_idx in Flow_vec_1.F_sol]   ) )        
-    #Flow_vec_up.U_sol = list( map( add, Flow_vec_up.U_sol, ((delta_t / 3) * Flow_vec_1.F_sol) ) )
-    #Flow_vec_up.U_sol = Flow_vec_up.U_sol + delta_t * (Flow_vec_1.F_sol/3)                
-        
-    
+    flow_up.U_sol = list( map( add, \
+                               flow_up.U_sol, \
+                               [var_idx * (delta_t / 3) for var_idx in flow_1.F_sol]   ) )        
+      
     #S3    
-    Flow_vec_1.U_sol = list( map(add, Flow_vec_0.U_sol, [var_idx * (delta_t * 0.5) for var_idx in Flow_vec_1.F_sol] ) )    
-    #Flow_vec_1.U_sol = Flow_vec_0.U_sol + ((delta_t * 0.5) * Flow_vec_1.F_sol)    
+    flow_1.U_sol = list( map(add, flow_0.U_sol, [var_idx * (delta_t * 0.5) for var_idx in flow_1.F_sol] ) )    
     #K3
-    Flow_vec_1 = compute_fluxes(dx, dy, \
-                            Flow_vec_1)        
+    flow_1 = comp_fluxes(flow_1, deriv_sten)        
         
     #RK_stage_3    
-    Flow_vec_up.U_sol = list( map( add, \
-                                   Flow_vec_up.U_sol, \
-                                   [var_idx * (delta_t / 3) for var_idx in Flow_vec_1.F_sol]   ) )        
-    #Flow_vec_up.U_sol = list( map( add, Flow_vec_up.U_sol, ((delta_t / 3) * Flow_vec_1.F_sol) ) )
-    #Flow_vec_up.U_sol = Flow_vec_up.U_sol + delta_t * (Flow_vec_1.F_sol/3)            
-        
-        
+    flow_up.U_sol = list( map( add, \
+                               flow_up.U_sol, \
+                               [var_idx * (delta_t / 3) for var_idx in flow_1.F_sol]   ) )        
+ 
     #S4    
-    Flow_vec_1.U_sol = list( map(add, Flow_vec_0.U_sol, [var_idx * (delta_t) for var_idx in Flow_vec_1.F_sol] ) )    
-    #Flow_vec_1.U_sol = Flow_vec_0.U_sol + (delta_t * Flow_vec_1.F_sol)        
+    flow_1.U_sol = list( map(add, flow_0.U_sol, [var_idx * (delta_t) for var_idx in flow_1.F_sol] ) )    
     #K4
-    Flow_vec_1 = compute_fluxes(dx, dy, \
-                            Flow_vec_1)            
+    flow_1 = comp_fluxes(flow_1, deriv_sten)            
         
     #RK_stage_4    
-    Flow_vec_up.U_sol = list( map( add, \
-                                   Flow_vec_up.U_sol, \
-                                   [var_idx * (delta_t / 6) for var_idx in Flow_vec_1.F_sol]   ) )        
-    #Flow_vec_up.U_sol = list( map( add, Flow_vec_up.U_sol, ((delta_t / 6) * Flow_vec_1.F_sol) ) )        
-    #Flow_vec_up.U_sol = Flow_vec_up.U_sol + delta_t * (Flow_vec_1.F_sol/6)            
+    flow_up.U_sol = list( map( add, \
+                               flow_up.U_sol, \
+                               [var_idx * (delta_t / 6) for var_idx in flow_1.F_sol]   ) )        
 
-    return Flow_vec_up
+    return flow_up
 
-def comp_euler_time_step(compute_fluxes, Flow_vec_0, \
-                                              dx, dy, \
-                                             delta_t):
+def comp_euler_time_step(comp_fluxes, deriv_sten, flow_0, Delta_t):
 
-    Flow_vec_up = Flow_vec_0
-    
-    Flow_vec_0 = compute_fluxes(dx, dy, \
-                            Flow_vec_0)
+    flow_up = flow_0    
+
+    flow_0 = comp_fluxes(flow_0, deriv_sten)
         
-    Flow_vec_up.U_sol[0] = Flow_vec_0.U_sol[0] - delta_t * Flow_vec_0.F_sol[0]        
-    Flow_vec_up.U_sol[1] = Flow_vec_0.U_sol[1] - delta_t * Flow_vec_0.F_sol[1]
+    flow_up.U_sol = flow_0.U_sol + Delta_t * flow_0.F_sol        
 
-    return Flow_vec_up
+    return flow_up
     
