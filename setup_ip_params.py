@@ -11,10 +11,14 @@ ip.fil_sten   = pu.FIL_1
 ip.wkdir_grid_read = 'C:\\Users\\Nishanth\\Desktop\\nish_work\\python_proj\\ponni_solver\\grid_gen\\'
 ip.ip_fname        = 'ip_grid_1D_101.h5'
 
+ip.wkdir_write_data = 'C:\\Users\\Nishanth\\Desktop\\nish_work\\python_proj\\ponni_solver\\output\\'
+ip.op_gen_fname = 'lconv_sol'
+
 ip.CFL = 0.1
 
 ip.stop_time = 0
-ip.stop_iter = 10
+ip.stop_iter = 1000
+ip.output_freq   = 5
 
 pm.ponni_main(ip)
 

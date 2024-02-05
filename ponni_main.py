@@ -18,42 +18,42 @@ import io_lib as io
 # 7. Print output as needed
 
 def ponni_main(ip):
-    
-    comp_deriv      = pi.get_deriv_sten_func_ptr(ip.deriv_sten)
-    comp_fil        = pi.get_fil_sten_func_ptr(ip.fil_sten)
-    comp_time_march = pi.get_time_march_func_ptr(ip.time_march)
-    
-    comp_fluxes     = pi.get_comp_fluxes_func_ptr(ip.flow_model)
-    
-    # Read the data from the input grid
-    x_coord = io.read_1D_grid_data(ip.wkdir_grid_read,  \
-                                   ip.ip_fname)
-
-    # Compute the time step
-    Delta_t = pl.comp_1D_time_step(x_coord, ip.CFL)
 
     # Setup the necessary data structures
     flow = pl.flow_blk_1D()
     
+    flow.comp_fluxes     = pi.get_comp_fluxes_func_ptr(ip.flow_model)    
+    flow.comp_deriv      = pi.get_deriv_sten_func_ptr(ip.deriv_sten)
+    flow.comp_time_march = pi.get_time_march_func_ptr(ip.time_march)
+    flow.comp_fil        = pi.get_fil_sten_func_ptr(ip.fil_sten)    
+    
+    # Read the data from the input grid
+    x_coord = io.read_1D_grid_data(ip.wkdir_grid_read,  \
+                                   ip.ip_fname)
+    flow.x_coord = x_coord
+
+    # Compute the grid metrics
+    flow = pl.comp_1D_grid_metrics(flow)
+    
+    # Compute the time step
+    Delta_t = pl.comp_1D_time_step(x_coord, ip.CFL)
+    
     # Setup the initial conditions
     flow = pum.set_init_cond_1D_conv(flow, x_coord)
     
-    time = 0
-    Iter = 0
-    
-    while ((time < ip.stop_time) or (Iter < ip.stop_iter)):
+    while ((flow.time < ip.stop_time) or (flow.Iter < ip.stop_iter)):
         
-        print(f'ponni_main: Iter = {Iter}')
+        print(f'ponni_main: Iter = {flow.Iter}')
+     
+        flow = flow.comp_time_march(flow, Delta_t)
         
-        flow = comp_time_march(comp_fluxes, comp_deriv, flow, Delta_t)
+        flow.U_sol = flow.comp_fil(flow.U_sol)
         
-        flow.U_sol = comp_fil(flow.U_sol)
+        if ((flow.Iter % ip.output_freq) == 0):
+            
+            io.write_output_to_hdf5_file(ip, flow)
+            flow.op_idx = flow.op_idx + 1
         
-        Iter = Iter + 1
-        time = time + Delta_t
+        flow.Iter = flow.Iter + 1
+        flow.time = flow.time + Delta_t
         
-        
-
-        
-    
-

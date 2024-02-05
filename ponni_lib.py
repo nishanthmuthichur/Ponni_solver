@@ -6,9 +6,6 @@ import fin_diff_lib as fdl
 
 INIT_DUM_VAL = -100000
 
-U_VEL = 0
-V_VEL = 1
-
 #************************DATA STRUCTURE DEFINITIONS****************************
 
 class flow_blk_1D:
@@ -18,8 +15,19 @@ class flow_blk_1D:
         self.U_sol = list()
         self.F_sol = list()
     
+        self.x_coord = 0
+    
+        self.metric_xE = 0
+        self.metric_Ex = 0
+    
         self.Iter  = 0
         self.time  = 0
+        self.op_idx = 0
+
+        self.comp_fluxes     = 0
+        self.comp_deriv      = 0
+        self.comp_time_march = 0
+        self.time_fil        = 0
 
     def __str__(self):
         
@@ -77,26 +85,19 @@ def comp_2D_time_step(xcoord, \
     
     return dt
 
-#******************************************************************************
-
-def write_data_to_hdf5_file(wkdir_write_data, op_gen_fname, \
-                                                    op_idx, \
-                                                  Flow_vec):
-
-    op_fname_abs = wkdir_write_data + \
-                       op_gen_fname + \
-                                '_' + \
-                        str(op_idx) + \
-                               '.h5'
-                              
-    file_dp = h5.File(op_fname_abs, 'w')
-
-    file_dp.create_dataset('/time'     , data = Flow_vec.time)
-    file_dp.create_dataset('/time_idx' , data = Flow_vec.time_idx)    
-    file_dp.create_dataset('/u_vel'    , data = Flow_vec.U_sol[U_VEL])
-    file_dp.create_dataset('/v_vel'    , data = Flow_vec.U_sol[V_VEL])
-
-    file_dp.close()                                   
+def comp_1D_grid_metrics(flow):
+    
+    x_coord = flow.x_coord
+    
+    metric_xe = flow.comp_deriv(x_coord)
+    
+    metric_ex = 1 / metric_xe
+    
+    flow.metric_xe = metric_xe
+    flow.metric_ex = metric_ex
+    
+    return flow
+    
 
 def filter_sol(Flow_vec):
     

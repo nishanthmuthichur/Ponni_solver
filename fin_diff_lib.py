@@ -411,14 +411,14 @@ def comp_CD10_filter(U):
 
 
 
-def comp_RK4_time_step(comp_fluxes, deriv_sten, flow_0, delta_t):
+def comp_RK4_time_step(flow_0, delta_t):
 
     flow_up = flow_0    
     
     #S1
     flow_1 = flow_0     
     #K1
-    flow_1 = comp_fluxes(flow_1, deriv_sten)
+    flow_1 = flow_0.comp_fluxes(flow_1)
     #RK_stage_1    
     flow_up.U_sol = list( map( add, \
                                flow_up.U_sol, \
@@ -427,7 +427,7 @@ def comp_RK4_time_step(comp_fluxes, deriv_sten, flow_0, delta_t):
     #S2    
     flow_1.U_sol = list( map(add, flow_0.U_sol, [var_idx * (delta_t * 0.5) for var_idx in flow_1.F_sol] ) )
     #K2
-    flow_1 = comp_fluxes(flow_1, deriv_sten)    
+    flow_1 = flow_0.comp_fluxes(flow_1)    
     #RK_stage_2    
     flow_up.U_sol = list( map( add, \
                                flow_up.U_sol, \
@@ -436,7 +436,7 @@ def comp_RK4_time_step(comp_fluxes, deriv_sten, flow_0, delta_t):
     #S3    
     flow_1.U_sol = list( map(add, flow_0.U_sol, [var_idx * (delta_t * 0.5) for var_idx in flow_1.F_sol] ) )    
     #K3
-    flow_1 = comp_fluxes(flow_1, deriv_sten)        
+    flow_1 = flow_0.comp_fluxes(flow_1)        
         
     #RK_stage_3    
     flow_up.U_sol = list( map( add, \
@@ -446,7 +446,7 @@ def comp_RK4_time_step(comp_fluxes, deriv_sten, flow_0, delta_t):
     #S4    
     flow_1.U_sol = list( map(add, flow_0.U_sol, [var_idx * (delta_t) for var_idx in flow_1.F_sol] ) )    
     #K4
-    flow_1 = comp_fluxes(flow_1, deriv_sten)            
+    flow_1 = flow_0.comp_fluxes(flow_1)            
         
     #RK_stage_4    
     flow_up.U_sol = list( map( add, \
