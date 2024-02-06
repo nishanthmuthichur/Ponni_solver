@@ -411,7 +411,7 @@ def comp_CD10_filter(U):
 
 
 
-def comp_RK4_time_step(flow_0, delta_t):
+def comp_RK4_time_step(flow_0, Delta_t):
 
     flow_up = flow_0    
     
@@ -422,36 +422,36 @@ def comp_RK4_time_step(flow_0, delta_t):
     #RK_stage_1    
     flow_up.U_sol = list( map( add, \
                                flow_up.U_sol, \
-                               [var_idx * (delta_t / 6) for var_idx in flow_1.F_sol]   ) )    
+                               [var_idx * (Delta_t / 6) for var_idx in flow_1.F_sol]   ) )    
         
     #S2    
-    flow_1.U_sol = list( map(add, flow_0.U_sol, [var_idx * (delta_t * 0.5) for var_idx in flow_1.F_sol] ) )
+    flow_1.U_sol = list( map(add, flow_0.U_sol, [var_idx * (Delta_t * 0.5) for var_idx in flow_1.F_sol] ) )
     #K2
     flow_1 = flow_0.comp_fluxes(flow_1)    
     #RK_stage_2    
     flow_up.U_sol = list( map( add, \
                                flow_up.U_sol, \
-                               [var_idx * (delta_t / 3) for var_idx in flow_1.F_sol]   ) )        
+                               [var_idx * (Delta_t / 3) for var_idx in flow_1.F_sol]   ) )        
       
     #S3    
-    flow_1.U_sol = list( map(add, flow_0.U_sol, [var_idx * (delta_t * 0.5) for var_idx in flow_1.F_sol] ) )    
+    flow_1.U_sol = list( map(add, flow_0.U_sol, [var_idx * (Delta_t * 0.5) for var_idx in flow_1.F_sol] ) )    
     #K3
     flow_1 = flow_0.comp_fluxes(flow_1)        
         
     #RK_stage_3    
     flow_up.U_sol = list( map( add, \
                                flow_up.U_sol, \
-                               [var_idx * (delta_t / 3) for var_idx in flow_1.F_sol]   ) )        
+                               [var_idx * (Delta_t / 3) for var_idx in flow_1.F_sol]   ) )        
  
     #S4    
-    flow_1.U_sol = list( map(add, flow_0.U_sol, [var_idx * (delta_t) for var_idx in flow_1.F_sol] ) )    
+    flow_1.U_sol = list( map(add, flow_0.U_sol, [var_idx * (Delta_t) for var_idx in flow_1.F_sol] ) )    
     #K4
     flow_1 = flow_0.comp_fluxes(flow_1)            
         
     #RK_stage_4    
     flow_up.U_sol = list( map( add, \
                                flow_up.U_sol, \
-                               [var_idx * (delta_t / 6) for var_idx in flow_1.F_sol]   ) )        
+                               [var_idx * (Delta_t / 6) for var_idx in flow_1.F_sol]   ) )        
 
     return flow_up
 

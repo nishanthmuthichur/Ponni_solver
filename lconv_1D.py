@@ -1,6 +1,3 @@
-import numpy as np
-import fin_diff_lib as fd
-import ponni_utils as pu
 
 def comp_fluxes_lconv_1D(flow):
     

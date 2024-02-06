@@ -15,19 +15,19 @@ class flow_blk_1D:
         self.U_sol = list()
         self.F_sol = list()
     
-        self.x_coord = 0
+        self.x_coord = INIT_DUM_VAL
     
-        self.metric_xE = 0
-        self.metric_Ex = 0
+        self.metric_xE = INIT_DUM_VAL
+        self.metric_Ex = INIT_DUM_VAL
     
-        self.Iter  = 0
+        self.Iter  = 1
         self.time  = 0
         self.op_idx = 0
 
-        self.comp_fluxes     = 0
-        self.comp_deriv      = 0
-        self.comp_time_march = 0
-        self.time_fil        = 0
+        self.comp_fluxes     = INIT_DUM_VAL
+        self.comp_deriv      = INIT_DUM_VAL
+        self.comp_time_march = INIT_DUM_VAL
+        self.time_fil        = INIT_DUM_VAL
 
     def __str__(self):
         
@@ -89,12 +89,15 @@ def comp_1D_grid_metrics(flow):
     
     x_coord = flow.x_coord
     
-    metric_xe = flow.comp_deriv(x_coord)
+    N_pts = len(x_coord)
     
-    metric_ex = 1 / metric_xe
+    #metric_xE = flow.comp_deriv(x_coord)
+    metric_xE = (1 / (len(x_coord) - 1)) * np.ones(N_pts)
     
-    flow.metric_xe = metric_xe
-    flow.metric_ex = metric_ex
+    metric_Ex = 1 / metric_xE
+    
+    flow.metric_xE = metric_xE
+    flow.metric_Ex = metric_Ex
     
     return flow
     

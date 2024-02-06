@@ -23,9 +23,9 @@ def ponni_main(ip):
     flow = pl.flow_blk_1D()
     
     flow.comp_fluxes     = pi.get_comp_fluxes_func_ptr(ip.flow_model)    
-    flow.comp_deriv      = pi.get_deriv_sten_func_ptr(ip.deriv_sten)
+    flow.comp_deriv      = pi.get_comp_deriv_func_ptr(ip.deriv_sten)
     flow.comp_time_march = pi.get_time_march_func_ptr(ip.time_march)
-    flow.comp_fil        = pi.get_fil_sten_func_ptr(ip.fil_sten)    
+    flow.comp_fil        = pi.get_comp_fil_func_ptr(ip.fil_sten)    
     
     # Read the data from the input grid
     x_coord = io.read_1D_grid_data(ip.wkdir_grid_read,  \
@@ -38,16 +38,18 @@ def ponni_main(ip):
     # Compute the time step
     Delta_t = pl.comp_1D_time_step(x_coord, ip.CFL)
     
-    # Setup the initial conditions
-    flow = pum.set_init_cond_1D_conv(flow, x_coord)
+    # Setup the initial condition
+    flow = pum.set_init_cond_1D_conv(flow)
+    io.write_output_to_hdf5_file(ip, flow)  
+    flow.op_idx = flow.op_idx + 1
     
     while ((flow.time < ip.stop_time) or (flow.Iter < ip.stop_iter)):
         
         print(f'ponni_main: Iter = {flow.Iter}')
      
         flow = flow.comp_time_march(flow, Delta_t)
-        
-        flow.U_sol = flow.comp_fil(flow.U_sol)
+        #flow.U_sol[0] = flow.U_sol[-1]
+        #flow.U_sol = flow.comp_fil(flow.U_sol)
         
         if ((flow.Iter % ip.output_freq) == 0):
             

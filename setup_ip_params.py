@@ -4,6 +4,7 @@ import ponni_main as pm
 ip = pu.ip_params()
 
 ip.flow_model = pu.LCONV_1D
+#ip.deriv_sten = pu.CD8
 ip.deriv_sten = pu.DRP4
 ip.time_march = pu.RK4
 ip.fil_sten   = pu.FIL_1
