@@ -45,17 +45,21 @@ def ponni_main(ip):
     
     while ((flow.time < ip.stop_time) or (flow.Iter < ip.stop_iter)):
         
-        print(f'ponni_main: Iter = {flow.Iter}')
-     
+        #print(f'ponni_main: Iter = {flow.Iter}')
+
+        flow.Iter = flow.Iter + 1
+        flow.time = flow.time + Delta_t        
+
         flow = flow.comp_time_march(flow, Delta_t)
-        #flow.U_sol[0] = flow.U_sol[-1]
-        #flow.U_sol = flow.comp_fil(flow.U_sol)
+        
+        test = 1
+        #U_fil = flow.comp_fil(flow.U_sol)
+        #flow.U_sol = flow.metric_Ex * U_fil
         
         if ((flow.Iter % ip.output_freq) == 0):
             
             io.write_output_to_hdf5_file(ip, flow)
             flow.op_idx = flow.op_idx + 1
         
-        flow.Iter = flow.Iter + 1
-        flow.time = flow.time + Delta_t
+
         

@@ -20,7 +20,7 @@ class flow_blk_1D:
         self.metric_xE = INIT_DUM_VAL
         self.metric_Ex = INIT_DUM_VAL
     
-        self.Iter  = 1
+        self.Iter  = 0
         self.time  = 0
         self.op_idx = 0
 
@@ -50,7 +50,7 @@ def comp_1D_time_step(x_coord, \
     
     dt = CFL * dx_min
      
-    print(f'ponni_1D: CFL = {CFL}; time step = {dt} s')    
+    print(f'ponni_1D: dx_min = {dx_min}; CFL = {CFL}; time step = {dt} s')    
     
     return dt
     

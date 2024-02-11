@@ -42,7 +42,7 @@ def get_time_march_func_ptr(time_march):
     
     if (time_march == pu.RK4):
     
-        f_ptr = fd.comp_RK4_time_step
+        f_ptr = fd.comp_RK4_time_step_test
         print('ponni_main: RK4 time stepping scheme is selected.')        
         
     else:

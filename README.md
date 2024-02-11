@@ -1,4 +1,4 @@
-FLOW_SOLVER_2D PROJECT ARCHITECTURE
+PONNI PROJECT ARCHITECTURE
 
 
 
@@ -37,19 +37,17 @@ FLOW_SOLVER_2D PROJECT ARCHITECTURE
 
 FLOW SOLVER STATUS
 
-    1. The flow solver contains many for loops. Need to see if they could be replaced with list comprehensions
-    2. An interfaces module need to be implemented. This interface module would allow different features in the 
-       solver is to be easily replaceable. 
-    3. The structure of the solver needs to be analysed and modified if needed. 
-    4. There appears to be a bug in the filtering section of the solver. Need to resolved. 
+    1. The solver contains a 1D convection module with periodic boundary condition. The testcases appear to be satisfactory for now. More testing needed.
 
+FUTURE UPDATES
 
-FLOW SOLVER FUTURE UPDATES
-
-    0. Filtering problem needs to be resolved. 
-    1. The flow solver should be computed in the generalized coordinates. 
-    2. Sponge layers need to be added. 
-    3. Adaptive time_stepping feature needs to be implemented.
-    4. Viscous stresses need to be included. 
-    5. Non-linearity needs to be included
-    6. Pressure + mass conservation needs to be included.
+    1. Next step is to clean up the solver + get the filtering stencil working.
+    2. Implement the non-periodic boundary condition + schemes
+    3. Add a sponge layer + PID type controller feature if possible.  
+    4. Write a 1D acoustic solver + NRBC. 
+    5. Write a 1D Euler equation solver + NSCBC. 
+    6. 2D convection equation
+    7. 2D NS equation
+        i. Couette flow.
+       ii. Flow over backward facing step. 
+      iii. 2D plane jet. 

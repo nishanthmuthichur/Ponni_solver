@@ -1,6 +1,7 @@
 from operator import add
 
 import numpy as np
+import copy  as cp
 
 # This function is used to compute the derivative 'dYdX' of 'Y' using 
 # an explicit 8th order central difference stencil
@@ -80,8 +81,12 @@ def comp_CD8_deriv_periodic(U):
 # 4th order DRP derivative scheme
 def comp_DRP4_deriv_periodic(Y):
 
-    N_pts = len(Y);
-    dYdX = np.zeros(N_pts);    
+    N_pts  = len(Y)
+    Nm_pts = N_pts - 1
+    
+    Y_mod = Y[0 : Nm_pts]
+    
+    dYdX = np.zeros(N_pts)
 
     a_m3 = -0.02651995
     a_m2 =  0.18941314
@@ -91,48 +96,50 @@ def comp_DRP4_deriv_periodic(Y):
     a_p2 = -a_m2
     a_p3 = -a_m3
 
-    for idx in range(0, N_pts):
+    for idx in range(0, Nm_pts):
 
         idx_m3 = idx - 3
         idx_m2 = idx - 2
         idx_m1 = idx - 1
-        idx_0  = idx
+        idx_0  = idx 
             
-        if (idx <= (N_pts - 4)):
+        if (idx <= (Nm_pts - 4)):
                 
             idx_p1 = idx + 1
             idx_p2 = idx + 2
             idx_p3 = idx + 3
                 
-        elif (idx == (N_pts - 3)): 
+        elif (idx == (Nm_pts - 3)): 
                 
             idx_p1 = idx + 1
             idx_p2 = idx + 2
-            idx_p3 = (idx + 3) % N_pts                
+            idx_p3 = (idx + 3) % Nm_pts                
             
-        elif (idx == (N_pts - 2)): 
+        elif (idx == (Nm_pts - 2)): 
                 
-            idx_p1 = idx + 1
-            idx_p2 = (idx + 2) % N_pts                            
-            idx_p3 = (idx + 3) % N_pts                            
+            idx_p1 =  idx + 1
+            idx_p2 = (idx + 2) % Nm_pts                            
+            idx_p3 = (idx + 3) % Nm_pts                            
             
-        elif (idx == (N_pts - 1)): 
+        elif (idx == (Nm_pts - 1)): 
                 
-            idx_p1 = (idx + 1) % N_pts                            
-            idx_p2 = (idx + 2) % N_pts                            
-            idx_p3 = (idx + 3) % N_pts
+            idx_p1 = (idx + 1) % Nm_pts                            
+            idx_p2 = (idx + 2) % Nm_pts                            
+            idx_p3 = (idx + 3) % Nm_pts
             
         else: 
             
             print(f'Error! All if conditions are exhausted.')
 
-        dYdX[idx] = a_m3 * Y[idx_m3] + \
-                    a_m2 * Y[idx_m2] + \
-                    a_m1 * Y[idx_m1] + \
-                    a_0  * Y[idx_0 ] + \
-                    a_p1 * Y[idx_p1] + \
-                    a_p2 * Y[idx_p2] + \
-                    a_p3 * Y[idx_p3] 
+        dYdX[idx] = a_m3 * Y_mod[idx_m3] + \
+                    a_m2 * Y_mod[idx_m2] + \
+                    a_m1 * Y_mod[idx_m1] + \
+                    a_0  * Y_mod[idx_0 ] + \
+                    a_p1 * Y_mod[idx_p1] + \
+                    a_p2 * Y_mod[idx_p2] + \
+                    a_p3 * Y_mod[idx_p3] 
+
+    dYdX[N_pts - 1] = dYdX[0]
 
     return dYdX
 
@@ -140,6 +147,7 @@ def comp_DRP4_deriv_periodic(Y):
 def comp_DRP4_fil_periodic(U):
 
     N_pts = len(U);
+    
     fil_U = np.zeros(N_pts) 
 
     d_m3 = -0.01712408960
@@ -411,12 +419,53 @@ def comp_CD10_filter(U):
 
 
 
-def comp_RK4_time_step(flow_0, Delta_t):
-
-    flow_up = flow_0    
+def comp_RK4_time_step_test(flow_0, Delta_t):
+    
+    #print('The RK4 test function is being executed.')
+    
+    flow_up = cp.deepcopy(flow_0)    
     
     #S1
-    flow_1 = flow_0     
+    flow_1 = cp.deepcopy(flow_0)
+    #K1
+    flow_1 = flow_0.comp_fluxes(flow_1)
+    K1 = - (2 * np.pi) * np.cos(2 * np.pi * flow_0.x_coord)
+    #RK_stage_1    
+    flow_up.U_sol = flow_up.U_sol + (Delta_t / 6) * flow_1.F_sol
+
+    #S2
+    flow_1.U_sol = flow_0.U_sol + (Delta_t / 2) * flow_1.F_sol
+    #K2
+    flow_1 = flow_0.comp_fluxes(flow_1)
+    K2 = K1 - (2 * np.pi)**2 * np.sin(2 * np.pi * flow_0.x_coord) * (Delta_t/2)    
+    #RK_stage_2    
+    flow_up.U_sol = flow_up.U_sol + (Delta_t / 3) * flow_1.F_sol
+
+    #S3
+    flow_1.U_sol = flow_0.U_sol + (Delta_t / 2) * flow_1.F_sol
+    #K3
+    flow_1 = flow_0.comp_fluxes(flow_1)
+    K3 = K2 + (2 * np.pi)**3 * np.cos(2 * np.pi * flow_0.x_coord) * ((Delta_t**2)/4)    
+    #RK_stage_3    
+    flow_up.U_sol = flow_up.U_sol + (Delta_t / 3) * flow_1.F_sol
+
+    #S4
+    flow_1.U_sol = flow_0.U_sol + (Delta_t) * flow_1.F_sol
+    #K4
+    flow_1 = flow_0.comp_fluxes(flow_1)
+    K4 = K3 + (2 * np.pi)**4 * np.sin(2 * np.pi * flow_0.x_coord) * ((Delta_t**3)/4)    
+    #RK_stage_4
+    flow_up.U_sol = flow_up.U_sol + (Delta_t / 6) * flow_1.F_sol
+
+    return flow_up
+
+
+def comp_RK4_time_step_buggy(flow_0, Delta_t):
+
+    flow_up = cp.deepcopy(flow_0)    
+    
+    #S1
+    flow_1 = cp.deepcopy(flow_0)     
     #K1
     flow_1 = flow_0.comp_fluxes(flow_1)
     #RK_stage_1    
@@ -432,22 +481,20 @@ def comp_RK4_time_step(flow_0, Delta_t):
     flow_up.U_sol = list( map( add, \
                                flow_up.U_sol, \
                                [var_idx * (Delta_t / 3) for var_idx in flow_1.F_sol]   ) )        
-      
+        
     #S3    
     flow_1.U_sol = list( map(add, flow_0.U_sol, [var_idx * (Delta_t * 0.5) for var_idx in flow_1.F_sol] ) )    
     #K3
     flow_1 = flow_0.comp_fluxes(flow_1)        
-        
     #RK_stage_3    
     flow_up.U_sol = list( map( add, \
                                flow_up.U_sol, \
                                [var_idx * (Delta_t / 3) for var_idx in flow_1.F_sol]   ) )        
- 
+    
     #S4    
     flow_1.U_sol = list( map(add, flow_0.U_sol, [var_idx * (Delta_t) for var_idx in flow_1.F_sol] ) )    
     #K4
     flow_1 = flow_0.comp_fluxes(flow_1)            
-        
     #RK_stage_4    
     flow_up.U_sol = list( map( add, \
                                flow_up.U_sol, \

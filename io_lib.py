@@ -47,7 +47,7 @@ def write_output_to_hdf5_file(ip, flow):
     file_dp = h5.File(op_fname_abs, 'w')
 
     file_dp.create_dataset('/time'     , data = flow.time)
-    file_dp.create_dataset('/time_idx' , data = flow.Iter)    
+    file_dp.create_dataset('/Iter' , data = flow.Iter)    
     file_dp.create_dataset('/u_vel'    , data = flow.U_sol)
 
     file_dp.close()                                   

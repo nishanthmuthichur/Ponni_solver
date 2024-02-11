@@ -15,11 +15,11 @@ ip.ip_fname        = 'ip_grid_1D_101.h5'
 ip.wkdir_write_data = 'C:\\Users\\Nishanth\\Desktop\\nish_work\\python_proj\\ponni_solver\\output\\'
 ip.op_gen_fname = 'lconv_sol'
 
-ip.CFL = 0.1
+ip.CFL = 0.8
 
 ip.stop_time = 0
-ip.stop_iter = 1000
-ip.output_freq   = 5
+ip.stop_iter = 10000
+ip.output_freq   = 50
 
 pm.ponni_main(ip)
 
